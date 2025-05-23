@@ -30,7 +30,7 @@ flask-app/
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 Follow these steps to set up the Flask app on your local machine:
 
