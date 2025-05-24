@@ -1,20 +1,21 @@
+
 # Flask App
 
 A simple Flask web application with GitHub Actions CI/CD pipeline integration.
 
 ---
 
-##  Overview
+## Overview
 
 This repository contains a minimal Flask application designed as a starting point for web development with Python. It includes:
 
 - A simple route handler
 - CI/CD integration using GitHub Actions
-- Optional Docker support for containerized deployment
+- Docker support for containerized deployment to AWS EC2
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```text
 flask-app/
@@ -24,13 +25,13 @@ flask-app/
 ├── README.md           # Project documentation
 ├── .github/            # GitHub Actions workflow files (for CI/CD)
 │   └── workflows/
-│       └── ci-cd.yml   # CI/CD pipeline configuration
-└── Dockerfile          # Containerization setup (optional)
+│       └── docker-push.yml   # CI/CD deployment pipeline configuration
+└── Dockerfile          # Containerization setup
 ```
 
 ---
 
-##  Installation
+## Installation (Local)
 
 Follow these steps to set up the Flask app on your local machine:
 
@@ -64,7 +65,7 @@ Visit `http://localhost:5000/` in your browser.
 
 ---
 
-##  Architecture Diagram
+## Architecture Diagram
 
 ```
 +-------------+          +-------------+          +----------------+          +--------------------+
@@ -78,54 +79,44 @@ Visit `http://localhost:5000/` in your browser.
 
 ---
 
-##  GitHub Actions Workflow (CI/CD)
+## Deployment: CI/CD Pipeline with GitHub Actions
 
-This project includes a GitHub Actions workflow for automatic build and test.
-
-### Location: `.github/workflows/ci-cd.yml`
-
-```yaml
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run tests
-        run: |
-          # Add your test commands here, e.g. pytest
-          echo "No tests defined"
-
-      # Optional deployment steps go here
-```
-
-> You can customize this workflow by adding your test commands or deployment steps as needed.
+This project uses a GitHub Actions workflow to build, push, and deploy the Flask app to an AWS EC2 instance via Docker.
 
 ---
 
-##  Docker Support (Optional)
+### Workflow File
 
-To build and run the app using Docker:
+Location: `.github/workflows/docker-push.yml`
+
+---
+
+### Deployment Workflow Summary
+
+1. GitHub Actions is triggered on every push to the `master` branch.  
+2. It builds a Docker image of the Flask app using `docker/build-push-action`.  
+3. The image is pushed to DockerHub under your account.  
+4. GitHub Actions then uses SSH to connect to your EC2 instance.  
+5. It pulls the latest Docker image and runs it as a container on EC2.  
+
+---
+
+### GitHub Secrets Required
+
+Make sure you define the following secrets in your GitHub repository under:  
+**Settings → Secrets and Variables → Actions**
+
+- `DOCKER_USERNAME`: Your DockerHub username  
+- `DOCKER_PASSWORD`: Your DockerHub password or token  
+- `EC2_HOST`: The public IP address of your EC2 instance  
+- `EC2_USER`: The SSH username (e.g., `ec2-user` or `ubuntu`)  
+- `SSH_PRIVATE_KEY`: Your EC2 private key used to SSH into the instance  
+
+---
+
+## Docker Support (Local)
+
+To build and run the app locally using Docker:
 
 ```bash
 docker build -t flask-app .
@@ -135,3 +126,13 @@ docker run -p 5000:5000 flask-app
 Then open `http://localhost:5000/` in your browser.
 
 ---
+
+## Deployed Version
+
+When deployed via CI/CD, the Flask app runs on port 80 of your EC2 instance and is accessible using:
+
+```
+http://<your-ec2-public-ip>/
+```
+
+Replace `<your-ec2-public-ip>` with your actual EC2 IP address.
