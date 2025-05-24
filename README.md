@@ -4,7 +4,7 @@ A simple Flask web application with GitHub Actions CI/CD pipeline integration.
 
 ---
 
-## Overview
+##  Overview
 
 This repository contains a minimal Flask application designed as a starting point for web development with Python. It includes:
 
@@ -14,7 +14,7 @@ This repository contains a minimal Flask application designed as a starting poin
 
 ---
 
-## Project Structure
+##  Project Structure
 
 ```text
 flask-app/
@@ -30,7 +30,7 @@ flask-app/
 
 ---
 
-## Installation
+##  Installation
 
 Follow these steps to set up the Flask app on your local machine:
 
@@ -64,7 +64,7 @@ Visit `http://localhost:5000/` in your browser.
 
 ---
 
-## Architecture Diagram
+##  Architecture Diagram
 
 ```
 +-------------+          +-------------+          +----------------+          +--------------------+
@@ -78,7 +78,7 @@ Visit `http://localhost:5000/` in your browser.
 
 ---
 
-## GitHub Actions Workflow (CI/CD)
+##  GitHub Actions Workflow (CI/CD)
 
 This project includes a GitHub Actions workflow for automatic build and test.
 
@@ -115,82 +115,15 @@ jobs:
         run: |
           # Add your test commands here, e.g. pytest
           echo "No tests defined"
+
+      # Optional deployment steps go here
 ```
+
+> You can customize this workflow by adding your test commands or deployment steps as needed.
 
 ---
 
-## Deployment
-
-This project uses **Docker-based deployment to an AWS EC2 instance** via **GitHub Actions**.
-
-### Deployment Workflow Summary
-
-1. **GitHub Actions** is triggered on every push to the `master` branch.
-2. It **builds a Docker image** of the Flask app using `docker/build-push-action`.
-3. The image is **pushed to DockerHub** under your account.
-4. GitHub Actions then uses **SSH** to connect to your EC2 instance.
-5. It **pulls the latest Docker image** and **runs it as a container** on EC2.
-
-### GitHub Secrets Required
-
-Make sure you define the following secrets in your GitHub repository under:
-**Settings → Secrets and Variables → Actions**
-
-- `DOCKER_USERNAME`: Your DockerHub username
-- `DOCKER_PASSWORD`: Your DockerHub password or token
-- `EC2_HOST`: The public IP address of your EC2 instance
-- `EC2_USER`: The SSH username (e.g., `ec2-user` or `ubuntu`)
-- `SSH_PRIVATE_KEY`: Your EC2 private key used to SSH into the instance
-
-### Workflow File: `.github/workflows/deploy.yml`
-
-```yaml
-name: Build, Push and Deploy
-
-on:
-  push:
-    branches: [ "master" ]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push to DockerHub
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-
-    - name: Deploy to EC2 via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-          docker stop flask-app || true
-          docker rm flask-app || true
-          docker run -d -p 80:80 --name flask-app ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-```
-
----
-
-## Docker Support (Optional)
+##  Docker Support (Optional)
 
 To build and run the app using Docker:
 
