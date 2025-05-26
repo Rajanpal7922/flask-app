@@ -154,8 +154,8 @@ Then open `http://localhost:5000/` in your browser.
 
 ### Setup Summary:
 
-* Zabbix Server: Installed on public subnet
-* Zabbix Agent: Installed on Flask App EC2 (private subnet)
+* Zabbix Server: Installed on Zabbix Serve
+* Zabbix Agent: Installed on Flask App EC2
 * Template Used: `Template OS Linux by Zabbix agent`
 * Dashboard includes:
 
