@@ -1,17 +1,19 @@
 
-# Flask App
+# Flask Web Application with CI/CD and Monitoring
 
-A simple Flask web application with GitHub Actions CI/CD pipeline integration.
+A simple containerized Flask web application integrated with a GitHub Actions CI/CD pipeline, deployed to AWS EC2, and monitored using Zabbix.
 
 ---
 
-## Overview
+## Project Overview
 
-This repository contains a minimal Flask application designed as a starting point for web development with Python. It includes:
+This repository contains:
 
-- A simple route handler
-- CI/CD integration using GitHub Actions
-- Docker support for containerized deployment to AWS EC2
+* A lightweight Flask application
+* Docker-based containerization
+* CI/CD pipeline using GitHub Actions
+* Deployment to AWS EC2
+* Zabbix monitoring for CPU, memory, and disk usage      
 
 ---
 
@@ -124,6 +126,54 @@ docker run -p 5000:5000 flask-app
 ```
 
 Then open `http://localhost:5000/` in your browser.
+
+---
+
+##  Deployment Architecture
+
+```
+                     +-------------------+
+                     |                   |
+                     |  (Zabbix Server)  |
+                     +---------+---------+
+                               |
+                               v
+                     +-------------------+
+                     |                    |
+                     |   Flask App EC2    |
+                     +-------------------+
+```
+
+* Zabbix server monitors the Flask App instance via agent
+* Security groups restrict SSH/HTTP to only your IP
+* Monitoring metrics include CPU, memory, and disk
+
+---
+
+##  Monitoring with Zabbix
+
+### Setup Summary:
+
+* Zabbix Server: Installed on public subnet
+* Zabbix Agent: Installed on Flask App EC2 (private subnet)
+* Template Used: `Template OS Linux by Zabbix agent`
+* Dashboard includes:
+
+  * CPU Load
+  * Memory Available
+  * Disk Usage
+
+### Alerts:
+
+* Trigger configured for **High CPU usage**
+* Action set to **send email** via configured media type
+
+ Screenshots provided in the Word document:
+
+* Host registration
+* Template assignment
+* Dashboard view
+* Trigger & action configuration
 
 ---
 
